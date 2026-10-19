@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0c0b0a" />
+  <meta name="description" content="Visor estereoscópico SBS con Three.js, lil-gui y calibración para gafas tipo Cardboard." />
+  <title>StereoLab | Visor SBS</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./css/styles.css" />
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js",
+      "lil-gui": "https://cdn.jsdelivr.net/npm/lil-gui@0.20.0/+esm"
+    }
+  }
+  </script>
+  <script type="module" src="./js/main.js"></script>
+</head>
+<body>
+  <!-- Iconos dibujados a mano, mismo trazo para todos -->
+  <svg width="0" height="0" class="position-absolute" aria-hidden="true">
+    <symbol id="i-open" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="8.5" cy="9.5" r="1.6"/><path d="m21 15-4.5-4.5L8 19"/></symbol>
+    <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 7h9M17 7h3M4 12h3M11 12h9M4 17h11M19 17h1"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="17" r="2"/></symbol>
+    <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="7.5"/><path d="M12 2.5v5M12 16.5v5M2.5 12h5M16.5 12h5"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3.5v11M7.5 10.5 12 15l4.5-4.5M4.5 15.5v2.5A2.5 2.5 0 0 0 7 20.5h10a2.5 2.5 0 0 0 2.5-2.5v-2.5"/></symbol>
+    <symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.6 9.4a2.5 2.5 0 1 1 3.4 2.4c-.6.3-1 .8-1 1.5v.5M12 16.9v.1"/></symbol>
+    <symbol id="i-expand" viewBox="0 0 24 24"><path d="M8.5 3.5h-3a2 2 0 0 0-2 2v3M15.5 3.5h3a2 2 0 0 1 2 2v3M8.5 20.5h-3a2 2 0 0 1-2-2v-3M15.5 20.5h3a2 2 0 0 0 2-2v-3"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
+    <symbol id="i-reset" viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.4-5.7M4 4.5v4h4"/></symbol>
+    <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 3.5H7.5a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2V8z"/><path d="M14 3.5V8h4.5M9 13h6M9 16.5h4"/></symbol>
+    <symbol id="i-goggles" viewBox="0 0 24 24"><path d="M4.5 7.5h15a2 2 0 0 1 2 2v6.5a2 2 0 0 1-2 2h-3.3c-1.4 0-2.1-.7-3-2.3l-.6-1h-1.2l-.6 1c-.9 1.6-1.6 2.3-3 2.3H4.5a2 2 0 0 1-2-2V9.5a2 2 0 0 1 2-2z"/><circle cx="7.5" cy="12.5" r="2.6"/><circle cx="16.5" cy="12.5" r="2.6"/></symbol>
+  </svg>
+
+  <div class="app" id="appShell">
+    <header class="topbar">
+      <a class="brand" href="./" aria-label="StereoLab, inicio">
+        <svg class="brand-icon" aria-hidden="true"><use href="#i-goggles"/></svg>
+        <span>Stereo<b>Lab</b></span>
+      </a>
+      <div class="file-info" aria-live="polite">
+        <span class="file-name" id="imageStatus">Cargando demostración…</span>
+        <span class="file-dims" id="imageDimensions">—</span>
+      </div>
+      <div class="topbar-actions">
+        <button id="fullscreenBtn" type="button" class="icon-btn" aria-label="Pantalla completa"><svg aria-hidden="true"><use href="#i-expand"/></svg></button>
+        <button id="helpBtn" type="button" class="icon-btn" aria-label="Cómo se usa"><svg aria-hidden="true"><use href="#i-help"/></svg></button>
+      </div>
+    </header>
+
+    <main class="workspace">
+      <section class="viewer" aria-label="Visor estereoscópico">
+        <div class="display-wrap" id="displayWrap">
+          <div id="viewerStage" class="viewer-stage" role="img" aria-label="Vista izquierda y derecha de la fotografía">
+            <div class="center-divider" aria-hidden="true"></div>
+            <span class="eye-tag eye-tag-left" aria-hidden="true">Ojo izq.</span>
+            <span class="eye-tag eye-tag-right" aria-hidden="true">Ojo der.</span>
+            <div id="emptyState" class="empty-state" hidden>
+              <strong>Tu visor está listo</strong>
+              <span>Abre una foto SBS o una foto normal del teléfono.</span>
+            </div>
+            <div class="gesture-hint" id="gestureHint" aria-hidden="true">Pellizca para acercar · arrastra para mover</div>
+          </div>
+        </div>
+
+        <nav class="dock" aria-label="Acciones">
+          <div class="dock-tools">
+            <button type="button" class="tool" id="openBtn"><svg aria-hidden="true"><use href="#i-open"/></svg><span>Abrir foto</span></button>
+            <input id="fileInput" type="file" accept="image/jpeg,image/png,image/webp,image/avif" class="visually-hidden" tabindex="-1" aria-hidden="true" />
+            <button type="button" class="tool" id="settingsBtn" aria-controls="settingsPanel" aria-expanded="false"><svg aria-hidden="true"><use href="#i-sliders"/></svg><span>Ajustes</span></button>
+            <button type="button" class="tool" id="calibrateBtn"><svg aria-hidden="true"><use href="#i-target"/></svg><span>Calibrar</span></button>
+            <button type="button" class="tool" id="downloadBtn"><svg aria-hidden="true"><use href="#i-download"/></svg><span>Descargar</span></button>
+          </div>
+          <button type="button" class="primary-btn" id="cardboardBtn"><svg aria-hidden="true"><use href="#i-goggles"/></svg> Ver en gafas</button>
+        </nav>
+      </section>
+
+      <aside class="panel" id="settingsPanel" aria-label="Ajustes de la imagen">
+        <div class="panel-head">
+          <h2>Ajustes</h2>
+          <button type="button" class="icon-btn panel-close" id="settingsClose" aria-label="Cerrar ajustes"><svg aria-hidden="true"><use href="#i-close"/></svg></button>
+        </div>
+        <div class="panel-body">
+          <div id="guiHost" class="gui-host"></div>
+          <div class="panel-actions">
+            <button id="resetBtn" type="button" class="ghost-btn"><svg aria-hidden="true"><use href="#i-reset"/></svg> Restablecer</button>
+            <button id="saveBtn" type="button" class="ghost-btn"><svg aria-hidden="true"><use href="#i-file"/></svg> Ajustes JSON</button>
+          </div>
+          <h3 class="panel-subhead">Fotos de prueba</h3>
+          <div class="demo-row">
+            <button type="button" class="demo-card" id="demoOneBtn"><img src="./assets/images/demo-sbs-1.jpg" alt="" loading="lazy" /><span>Montañas</span></button>
+            <button type="button" class="demo-card" id="demoTwoBtn"><img src="./assets/images/demo-sbs-2.jpg" alt="" loading="lazy" /><span>Profundidad</span></button>
+          </div>
+          <p class="panel-note">Tus fotos se procesan en este dispositivo; no se suben a ningún servidor.</p>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <dialog class="help" id="helpDialog" aria-labelledby="helpTitle">
+    <form method="dialog" class="help-inner">
+      <div class="panel-head">
+        <h2 id="helpTitle">Cómo se usa</h2>
+        <button class="icon-btn" value="close" aria-label="Cerrar"><svg aria-hidden="true"><use href="#i-close"/></svg></button>
+      </div>
+      <ol class="steps">
+        <li><strong>Abre una foto.</strong> Una SBS (dos vistas lado a lado) se ve en 3D. Una foto normal también funciona, pero se ve plana.</li>
+        <li><strong>Encuádrala.</strong> Pellizca para acercar, arrastra para mover y toca dos veces para centrar.</li>
+        <li><strong>Calibra con las gafas puestas.</strong> Toca el lado izquierdo para restar, el derecho para sumar y el centro para avanzar, hasta ver una sola cruz +.</li>
+        <li><strong>Ver en gafas.</strong> Dentro del visor: mantén pulsado para recalibrar y toca dos veces para salir.</li>
+      </ol>
+      <p class="help-tip"><strong>¿Quieres 3D de verdad?</strong> Toma una foto, desliza el teléfono unos 6.5 cm a la derecha sin girarlo y toma otra. Únelas lado a lado: primera a la izquierda, segunda a la derecha.</p>
+    </form>
+  </dialog>
+
+  <div id="toast" class="app-toast" role="status" aria-live="polite"></div>
+</body>
+</html>
