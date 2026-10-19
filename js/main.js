@@ -214,3 +214,28 @@ stage.addEventListener('drop', (event) => {
 
 // Se precarga una foto para que la primera visita no muestre un área vacía.
 displaySource('./assets/images/demo-sbs-1.jpg', 0);
+
+// App instalable: funciona sin Internet y abre a pantalla completa desde el inicio.
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => {}));
+}
+const installBox = document.getElementById('installBox');
+const installBtn = document.getElementById('installBtn');
+const installed = window.matchMedia('(display-mode: fullscreen), (display-mode: standalone)').matches || navigator.standalone;
+const isIos = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+let installPrompt = null;
+if (installed) installBox.hidden = true;
+else if (isIos) document.getElementById('installIos').hidden = false;
+window.addEventListener('beforeinstallprompt', event => {
+  event.preventDefault();
+  installPrompt = event;
+  installBtn.hidden = false;
+});
+installBtn.addEventListener('click', async () => {
+  if (!installPrompt) return;
+  installPrompt.prompt();
+  const { outcome } = await installPrompt.userChoice;
+  installPrompt = null;
+  installBtn.hidden = true;
+  if (outcome === 'accepted') { installBox.hidden = true; showToast('StereoLab se instaló en tu teléfono.'); }
+});

@@ -231,6 +231,21 @@ body.cardboard-mode .app-toast { bottom: 16px; }
 #displayWrap:fullscreen { width: 100vw; height: 100dvh; border-radius: 0; }
 #displayWrap:fullscreen .eye-tag, #displayWrap:fullscreen .gesture-hint { display: none; }
 
+/* Aviso de giro: solo en modo gafas con el teléfono vertical */
+.rotate-hint { display: none; position: absolute; inset: 0; z-index: 6; flex-direction: column; align-items: center; justify-content: center; gap: 6px; text-align: center; padding: 24px; background: rgba(0, 0, 0, .86); pointer-events: none; }
+.rotate-hint svg { width: 64px; height: 64px; color: var(--kraft); stroke-width: 1.4; margin-bottom: 8px; animation: tilt 2.4s var(--ease) infinite; }
+.rotate-hint strong { font-family: var(--display); font-size: 1.4rem; letter-spacing: -.02em; }
+.rotate-hint span { color: var(--muted); font-size: .9rem; max-width: 26ch; }
+@keyframes tilt { 0%, 30% { transform: rotate(0); } 60%, 100% { transform: rotate(-90deg); } }
+@media (orientation: portrait) { body.cardboard-mode .rotate-hint { display: flex; } }
+
+.install-box { margin: 18px 16px 0; padding: 14px 16px; border: 1px solid var(--line); border-radius: 14px; }
+.install-box h3 { margin: 0 0 4px; font-size: .95rem; font-weight: 700; }
+.install-box p { margin: 0; font-size: .86rem; color: var(--muted); }
+.install-box .install-ios { margin-top: 8px; color: var(--text); }
+.install-box .ghost-btn { width: 100%; margin-top: 12px; }
+.install-box[hidden] { display: none; }
+
 /* ---------- Asistente de calibración dentro de las gafas: un HUD por ojo ---------- */
 .calib-eye { position: absolute; top: 0; bottom: 0; width: 50%; overflow: hidden; pointer-events: none; z-index: 4; display: none; background: rgba(0, 0, 0, .28); }
 .calib-eye-left { left: 0; } .calib-eye-right { left: 50%; }

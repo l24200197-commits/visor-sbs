@@ -4,6 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0c0b0a" />
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="icon" href="./assets/icons/icon-192.png" type="image/png" />
+  <link rel="apple-touch-icon" href="./assets/icons/apple-touch-icon.png" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="StereoLab" />
   <meta name="description" content="Visor estereoscópico SBS con Three.js, lil-gui y calibración para gafas tipo Cardboard." />
   <title>StereoLab | Visor SBS</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" />
@@ -33,6 +40,8 @@
     <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
     <symbol id="i-reset" viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.4-5.7M4 4.5v4h4"/></symbol>
     <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 3.5H7.5a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2V8z"/><path d="M14 3.5V8h4.5M9 13h6M9 16.5h4"/></symbol>
+    <symbol id="i-rotate" viewBox="0 0 24 24"><rect x="7" y="2.5" width="10" height="17" rx="2" transform="rotate(-90 12 12)"/><path d="M3.5 7.5A9 9 0 0 1 9 3.2M9 3.2 7 1.8M9 3.2 7.6 5.4"/></symbol>
+    <symbol id="i-install" viewBox="0 0 24 24"><rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M12 7v7M9 11l3 3 3-3M10.5 18.5h3"/></symbol>
     <symbol id="i-goggles" viewBox="0 0 24 24"><path d="M4.5 7.5h15a2 2 0 0 1 2 2v6.5a2 2 0 0 1-2 2h-3.3c-1.4 0-2.1-.7-3-2.3l-.6-1h-1.2l-.6 1c-.9 1.6-1.6 2.3-3 2.3H4.5a2 2 0 0 1-2-2V9.5a2 2 0 0 1 2-2z"/><circle cx="7.5" cy="12.5" r="2.6"/><circle cx="16.5" cy="12.5" r="2.6"/></symbol>
   </svg>
 
@@ -62,6 +71,11 @@
             <div id="emptyState" class="empty-state" hidden>
               <strong>Tu visor está listo</strong>
               <span>Abre una foto SBS o una foto normal del teléfono.</span>
+            </div>
+            <div class="rotate-hint" aria-hidden="true">
+              <svg><use href="#i-rotate"/></svg>
+              <strong>Gira el teléfono</strong>
+              <span>Ponlo en horizontal para verlo en las gafas</span>
             </div>
             <div class="gesture-hint" id="gestureHint" aria-hidden="true">Pellizca para acercar · arrastra para mover</div>
           </div>
@@ -113,6 +127,12 @@
         <li><strong>Calibra con las gafas puestas.</strong> Toca el lado izquierdo para restar, el derecho para sumar y el centro para avanzar, hasta ver una sola cruz +.</li>
         <li><strong>Ver en gafas.</strong> Dentro del visor: mantén pulsado para recalibrar y toca dos veces para salir.</li>
       </ol>
+      <section class="install-box" id="installBox">
+        <h3>Instálala en tu teléfono</h3>
+        <p id="installText">Se abre a pantalla completa, sin barras del navegador, y funciona sin Internet.</p>
+        <p class="install-ios" id="installIos" hidden>En iPhone: toca <b>Compartir</b> y luego <b>Agregar a inicio</b>.</p>
+        <button type="button" class="ghost-btn" id="installBtn" hidden><svg aria-hidden="true"><use href="#i-install"/></svg> Instalar StereoLab</button>
+      </section>
       <p class="help-tip"><strong>¿Quieres 3D de verdad?</strong> Toma una foto, desliza el teléfono unos 6.5 cm a la derecha sin girarlo y toma otra. Únelas lado a lado: primera a la izquierda, segunda a la derecha.</p>
     </form>
   </dialog>

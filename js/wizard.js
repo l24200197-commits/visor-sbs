@@ -67,16 +67,21 @@ export function createCalibrationWizard(stage, config, { onChange, onFinish }) {
     layout();
   }
 
+  // Vibración corta: confirma el toque aunque no veas la pantalla (Android).
+  const buzz = ms => { try { navigator.vibrate?.(ms); } catch { /* opcional */ } };
+
   function nudge(direction) {
     const step = STEPS[index];
     const next = Math.min(step.max, Math.max(step.min, config[step.key] + direction * step.step));
     if (next === config[step.key]) return;
     config[step.key] = next;
+    buzz(6);
     onChange();
     render();
   }
 
   function next() {
+    buzz(index < STEPS.length - 1 ? 25 : [25, 60, 25]);
     if (index < STEPS.length - 1) { index++; render(); }
     else { stop(); onFinish(); }
   }

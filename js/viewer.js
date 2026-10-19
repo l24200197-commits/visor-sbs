@@ -84,9 +84,11 @@ export function createStereoViewer(stage, settings) {
   function setImage(img, name) {
     const newTexture = new THREE.Texture(img);
     newTexture.colorSpace = THREE.SRGBColorSpace;
-    newTexture.minFilter = THREE.LinearFilter;
+    // Mipmaps + anisotropía: la foto se ve nítida y sin parpadeo al alejar con zoom.
+    newTexture.minFilter = THREE.LinearMipmapLinearFilter;
     newTexture.magFilter = THREE.LinearFilter;
-    newTexture.generateMipmaps = false;
+    newTexture.generateMipmaps = true;
+    newTexture.anisotropy = engine.maxAnisotropy;
     newTexture.needsUpdate = true;
     const newLeft = halfUV('left', img.naturalWidth);
     const newRight = halfUV('right', img.naturalWidth);

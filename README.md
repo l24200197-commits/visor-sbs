@@ -7,6 +7,8 @@ Proyecto educativo para la materia **Desarrollo de Soluciones en Ambientes Virtu
 ```text
 visor-sbs/
 ├── index.html                 # Interfaz principal y dependencias CDN
+├── manifest.webmanifest       # App instalable (nombre, iconos, pantalla completa)
+├── sw.js                      # Service worker: uso sin Internet
 ├── css/
 │   └── styles.css             # Diseño responsivo y modo inmersivo
 ├── js/
@@ -69,6 +71,12 @@ Abre `http://localhost:5500/`. **No abras `index.html` con doble clic y `file://
 | Intercambiar L/R | Corrige una fotografía cuyo orden de perspectivas está invertido | No |
 
 La calibración digital del paralaje **no cambia la distancia interpupilar física** ni repara una fotografía con disparidades o geometría estéreo erróneas. Las lentes Cardboard pueden requerir calibración óptica/distorsión específica no implementada en este visor introductorio.
+
+### En el teléfono
+
+- **Instálala como app:** en Android, botón **?** → *Instalar StereoLab* (o menú de Chrome → *Instalar app*). En iPhone, Safari → *Compartir* → *Agregar a inicio*. Instalada se abre a pantalla completa, sin barras del navegador (en iPhone es la única forma de quitarlas) y funciona sin Internet.
+- En modo gafas **la pantalla no se apaga** (Wake Lock) y, si el teléfono está vertical, aparece un aviso para girarlo.
+- Durante la calibración el teléfono **vibra** con cada toque (Android) para confirmar que se registró.
 
 ## 4. Arquitectura técnica
 

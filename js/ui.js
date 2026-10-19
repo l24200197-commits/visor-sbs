@@ -20,6 +20,19 @@ export function createImmersiveMode(onLayoutChange, hooks = {}) {
   let inCardboard = false;
   let nativeFullscreenStarted = false;
   let lastTap = 0;
+  let wakeLock = null;
+
+  // Evita que la pantalla se apague mientras el teléfono está dentro de las gafas.
+  async function keepAwake() {
+    try { wakeLock = await navigator.wakeLock?.request('screen'); } catch { wakeLock = null; }
+  }
+  function releaseWake() {
+    wakeLock?.release().catch(() => {});
+    wakeLock = null;
+  }
+  document.addEventListener('visibilitychange', () => {
+    if (inCardboard && document.visibilityState === 'visible') keepAwake();
+  });
 
   function layout() {
     requestAnimationFrame(() => onLayoutChange());
@@ -31,6 +44,7 @@ export function createImmersiveMode(onLayoutChange, hooks = {}) {
     inCardboard = true;
     nativeFullscreenStarted = false;
     document.body.classList.add('cardboard-mode');
+    keepAwake();
     layout();
     try {
       if (wrap.requestFullscreen) {
@@ -57,6 +71,7 @@ export function createImmersiveMode(onLayoutChange, hooks = {}) {
     inCardboard = false;
     nativeFullscreenStarted = false;
     document.body.classList.remove('cardboard-mode');
+    releaseWake();
     hooks.onExit?.();
     try { if (screen.orientation?.unlock) screen.orientation.unlock(); } catch { /* opcional */ }
     if (document.fullscreenElement && document.exitFullscreen) {

@@ -6,7 +6,7 @@ import * as THREE from 'three';
  */
 export function createStereoScene(stage) {
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: 'high-performance' });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 3)); // nitidez en teléfonos de alta densidad
   renderer.setClearColor('#000000', 1);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.domElement.setAttribute('aria-hidden', 'true');
@@ -74,6 +74,7 @@ export function createStereoScene(stage) {
   return {
     sceneLeft,
     sceneRight,
+    maxAnisotropy: renderer.capabilities.getMaxAnisotropy(),
     getSize,
     requestRender,
     resize,
